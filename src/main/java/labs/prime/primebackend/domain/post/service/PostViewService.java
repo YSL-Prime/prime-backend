@@ -1,9 +1,12 @@
 package labs.prime.primebackend.domain.post.service;
 
+import labs.prime.primebackend.domain.auth.entity.type.Role;
 import labs.prime.primebackend.domain.post.entity.Post;
 import labs.prime.primebackend.domain.post.entity.facade.PostFacade;
 import labs.prime.primebackend.domain.post.entity.repository.PostRepository;
 import labs.prime.primebackend.domain.post.presentation.dto.response.*;
+import labs.prime.primebackend.domain.user.entity.exception.UserAuthorizedException;
+import labs.prime.primebackend.global.security.jwt.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 public class PostViewService {
     private final PostRepository postRepository;
     private final PostFacade postFacade;
+    private final JwtProvider jwtProvider;
 
     @Transactional(readOnly = true)
     public ViewPostResponse viewPostDetails(UUID postId) {
@@ -46,20 +50,29 @@ public class PostViewService {
     }
 
     @Transactional(readOnly = true)
-    public ViewPostAdminResponse viewPostAdminDetails(UUID postId) {
+    public ViewPostAdminResponse viewPostAdminDetails(UUID postId, String token) {
         Post post = postFacade.foundPostById(postId);
+        String role = jwtProvider.getRole(token);
+
+        if (!Role.ADMIN.name().equals(role)) {
+            throw new UserAuthorizedException();
+        }
 
         return new ViewPostAdminResponse(post);
     }
 
     @Transactional(readOnly = true)
-    public PostListAdminViewResponse postsAllowView() {
+    public PostListAdminViewResponse viewAdminPosts(String token) {
+        String role = jwtProvider.getRole(token);
+
+        if (!Role.ADMIN.name().equals(role)) {
+            throw new UserAuthorizedException();
+        }
+
         List<PostListAdminViewElement> postList = postRepository.findAll()
                 .stream()
                 // 익명함수, 람다식
-                .map(post -> {
-                    return new PostListAdminViewElement(post);
-                })
+                .map(PostListAdminViewElement::new)
                 .collect(Collectors.toList());
 
         return new PostListAdminViewResponse(postList);
