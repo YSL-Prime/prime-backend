@@ -28,21 +28,14 @@ public class PostUpdateService {
         Post post = postFacade.foundPostById(id);
         String role = jwtProvider.getRole(token);
 
-        // ADMIN 권한을 가진 경우
-        if (Role.ADMIN.name().equals(role)) {
-            postRepository.delete(post);
-            return;
-        }
-
-        if (post.getAuthor().getEmail().equals(user.getEmail())) {
-            postRepository.delete(post);
-        } else {
+        if (!Role.ADMIN.name().equals(role)) {
             throw new UserAuthorizedException();
         }
 
         post.update(
                 request.getTitle(),
-                request.getContent()
+                request.getContent(),
+                false
         );
 
         postRepository.save(post);
