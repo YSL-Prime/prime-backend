@@ -39,9 +39,10 @@ public class Post {
     @JoinColumn(name = "autor")
     private User author;
 
-    public void update(String title, String content) {
+    public void update(String title, String content, Boolean allow) {
         this.title = title;
         this.content = content;
+        this.allow = allow;
     }
 
     public void allowAdmin(Boolean allow) {
