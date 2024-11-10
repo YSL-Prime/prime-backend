@@ -33,29 +33,32 @@ public class PostController {
         deleteService.postDelete(postId, token);
     }
 
+    @PatchMapping("/post/{id}")
+    private void postUpdate(@PathVariable("id") UUID id, @RequestBody PostUpdateRequest request, @RequestHeader("Authorization") String token) {
+        updateService.updatePost(id, request, token);
+    }
+
     @GetMapping("/post/{id}")
     private ViewPostResponse postView(@PathVariable("id") UUID id) {
         return viewService.viewPostDetails(id);
     }
 
-    @GetMapping("/post/all")
+    @GetMapping("/posts")
     private PostListResponse postsView() {
         return viewService.postsView();
     }
+
+
+
 
     @GetMapping("/admin/post/{id}")
     private ViewPostAdminResponse postAdminViewDetails(@PathVariable("id") UUID id, @RequestHeader("Authorization") String token) {
         return viewService.viewPostAdminDetails(id, token);
     }
 
-    @GetMapping("/admin/post/all")
+    @GetMapping("/admin/posts")
     private PostListAdminViewResponse postsAdminView(@RequestHeader("Authorization") String token) {
         return viewService.viewAdminPosts(token);
-    }
-
-    @PatchMapping("/post/update/{id}")
-    private void postUpdate(@PathVariable("id") UUID id, @RequestBody PostUpdateRequest request, @RequestHeader("Authorization") String token) {
-        updateService.updatePost(id, request, token);
     }
 
     @PatchMapping("/admin/post/{id}")
