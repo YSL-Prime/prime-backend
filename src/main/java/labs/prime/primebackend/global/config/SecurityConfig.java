@@ -30,6 +30,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**", "/email/**").permitAll()
+<<<<<<< Updated upstream
+=======
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+>>>>>>> Stashed changes
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtProvider), UsernamePasswordAuthenticationFilter.class);
