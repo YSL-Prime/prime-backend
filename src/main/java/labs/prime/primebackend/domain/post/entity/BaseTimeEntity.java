@@ -13,5 +13,5 @@ import java.time.LocalDate;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTimeEntity {
     @CreatedDate
-    private LocalDate createDate; //Entity가 생성되어 저장될 때 시간이 자동 저장
+    private LocalDate createdDate; //Entity가 생성되어 저장될 때 시간이 자동 저장
 }
