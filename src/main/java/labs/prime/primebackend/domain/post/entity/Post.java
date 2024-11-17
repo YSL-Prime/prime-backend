@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.awt.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -17,26 +18,27 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Post {
+public class Post extends BaseTimeEntity {
     @Id
+    @GeneratedValue
     private UUID id;
 
     private boolean allow;
 
-    @Size(min = 5, max = 15) // title을 최대 15자로 제한
+    @Size(min = 5, max = 15) // title을 최소 5자, 최대 15자로 제한
     @Column(nullable = false, length = 15)
     private String title;
 
-    @Size(min = 30, max = 2000) // content를 최대 2000자로 제한
+    @Size(min = 10, max = 2000) // content를 최소 10자, 최대 2000자로 제한
     @Column(nullable = false, length = 2000)
     private String content;
 
     @CreatedDate
-    @Column(name = "create_date", nullable = false)
+    @Column(name = "created_date", nullable = false)
     private LocalDate createdDate;
 
     @ManyToOne
-    @JoinColumn(name = "autor")
+    @JoinColumn(name = "author")
     private User author;
 
     public void update(String title, String content, Boolean allow) {

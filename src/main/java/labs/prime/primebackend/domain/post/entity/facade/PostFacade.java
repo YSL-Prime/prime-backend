@@ -13,7 +13,7 @@ import java.util.UUID;
 public class PostFacade {
     private final PostRepository postRepository;
 
-    public Post foundPostById(UUID id) {
+    public Post findPostById(UUID id) {
         return postRepository.findById(id).orElseThrow(() -> PostNotFoundException.EXCEPTION);
     }
 }
