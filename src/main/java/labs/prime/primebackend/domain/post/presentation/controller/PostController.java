@@ -1,12 +1,12 @@
 package labs.prime.primebackend.domain.post.presentation.controller;
 
-import labs.prime.primebackend.domain.post.presentation.dto.request.PostAllowRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import labs.prime.primebackend.domain.post.presentation.dto.request.PostCreateRequest;
 import labs.prime.primebackend.domain.post.presentation.dto.request.PostUpdateRequest;
 import labs.prime.primebackend.domain.post.presentation.dto.response.PostListAdminViewResponse;
 import labs.prime.primebackend.domain.post.presentation.dto.response.PostListResponse;
-import labs.prime.primebackend.domain.post.presentation.dto.response.ViewPostAdminResponse;
-import labs.prime.primebackend.domain.post.presentation.dto.response.ViewPostResponse;
+import labs.prime.primebackend.domain.post.presentation.dto.response.PostViewAdminResponse;
+import labs.prime.primebackend.domain.post.presentation.dto.response.PostViewResponse;
 import labs.prime.primebackend.domain.post.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -17,52 +17,39 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @RequestMapping()
 public class PostController {
+    private final PostCreateService createService;
     private final PostDeleteService deleteService;
     private final PostViewService viewService;
-    private final PostCreateService createService;
-    private final PostAllowService allowService;
     private final PostUpdateService updateService;
 
+
+    //포스트 작성
     @PostMapping("/post/write")
     private void postWrite(@RequestBody PostCreateRequest request) {
         createService.postCreate(request);
     }
 
-    @DeleteMapping("/post/{id}")
-    private void postDelete(@PathVariable("id") UUID postId, @RequestHeader("Authorization") String token) {
-        deleteService.postDelete(postId, token);
-    }
-
-    @PatchMapping("/post/{id}")
-    private void postUpdate(@PathVariable("id") UUID id, @RequestBody PostUpdateRequest request, @RequestHeader("Authorization") String token) {
-        updateService.updatePost(id, request, token);
-    }
-
+    //포스트 조회
     @GetMapping("/post/{id}")
-    private ViewPostResponse postView(@PathVariable("id") UUID id) {
+    private PostViewResponse postView(@PathVariable("id") UUID id) {
         return viewService.viewPostDetails(id);
     }
 
+    //포스트 리스트 조회
     @GetMapping("/posts")
     private PostListResponse postsView() {
         return viewService.postsView();
     }
 
-
-
-
-    @GetMapping("/admin/post/{id}")
-    private ViewPostAdminResponse postAdminViewDetails(@PathVariable("id") UUID id, @RequestHeader("Authorization") String token) {
-        return viewService.viewPostAdminDetails(id, token);
+    //포스트 수정
+    @PatchMapping("/post/{id}")
+    private void postUpdate(@PathVariable("id") UUID id, @RequestBody PostUpdateRequest request, HttpServletRequest httpRequest) {
+        updateService.updatePost(id, request, httpRequest);
     }
 
-    @GetMapping("/admin/posts")
-    private PostListAdminViewResponse postsAdminView(@RequestHeader("Authorization") String token) {
-        return viewService.viewAdminPosts(token);
-    }
-
-    @PatchMapping("/admin/post/{id}")
-    private void postAllow(@PathVariable("id") UUID id, @RequestBody PostAllowRequest request, @RequestHeader("Authorization") String token) {
-        allowService.allow(id, request, token);
+    //포스트 삭제
+    @DeleteMapping("/post/{id}")
+    private void postDelete(@PathVariable("id") UUID postId, HttpServletRequest request) {
+        deleteService.postDelete(postId, request);
     }
 }
