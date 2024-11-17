@@ -14,7 +14,7 @@ public enum ErrorCode {
     USER_NOT_AUTHORIZED(403, "User Not Authorized."),
     USER_NOT_CORRECT(401, "USER NOT CORRECT."),
 
-    PAGE_NOT_FOUND(404, "Page Not Found."),;
+    PAGE_NOT_FOUND(404, "Page Not Found.");
 
     private final int status;
     private final String message;
