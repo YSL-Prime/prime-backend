@@ -1,5 +1,6 @@
 package labs.prime.primebackend.domain.post.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import labs.prime.primebackend.domain.auth.entity.type.Role;
 import labs.prime.primebackend.domain.post.entity.Post;
 import labs.prime.primebackend.domain.post.entity.facade.PostFacade;
@@ -13,6 +14,7 @@ import labs.prime.primebackend.global.security.jwt.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -23,14 +25,12 @@ public class PostUpdateService {
     private final PostFacade postFacade;
     private final UserFacade userFacade;
 
-    public void updatePost(UUID id, PostUpdateRequest request, String token) {
+    public void updatePost(UUID id, PostUpdateRequest request, HttpServletRequest httpServletRequest) {
         User user = userFacade.getCurrentUser();
-        Post post = postFacade.foundPostById(id);
+        Post post = postFacade.findPostById(id);
+        String token = jwtProvider.resolveToken(httpServletRequest);
         String role = jwtProvider.getRole(token);
 
-        if (!Role.ADMIN.name().equals(role)) {
-            throw new UserAuthorizedException();
-        }
 
         post.update(
                 request.getTitle(),
@@ -38,6 +38,13 @@ public class PostUpdateService {
                 false
         );
 
-        postRepository.save(post);
+        System.out.println("이메일 " + post.getAuthor().getEmail() + "post " + post.getTitle());
+
+        if (Role.ADMIN.name().equals(role) || user.getEmail().equals(post.getAuthor().getEmail())) {
+            postRepository.save(post);
+        }
+
+        throw new UserAuthorizedException();
+
     }
 }

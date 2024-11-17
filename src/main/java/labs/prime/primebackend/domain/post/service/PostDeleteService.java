@@ -1,5 +1,6 @@
 package labs.prime.primebackend.domain.post.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import labs.prime.primebackend.domain.auth.entity.type.Role;
 import labs.prime.primebackend.domain.post.entity.Post;
 import labs.prime.primebackend.domain.post.entity.facade.PostFacade;
@@ -21,9 +22,10 @@ public class PostDeleteService {
     private final UserFacade userFacade;
     private final PostFacade postFacade;
 
-    public void postDelete(UUID postId, String token) {
+    public void postDelete(UUID postId, HttpServletRequest request) {
         User user = userFacade.getCurrentUser();
-        Post post = postFacade.foundPostById(postId);
+        Post post = postFacade.findPostById(postId);
+        String token = jwtProvider.resolveToken(request);
         String role = jwtProvider.getRole(token);
 
         // ADMIN 권한을 가진 경우
